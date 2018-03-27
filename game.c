@@ -14,43 +14,60 @@ const char Y = 'Y';
 
 void playGame() {
     printf("Xs and Os!\n");
+    struct game* pGameInfo = malloc(sizeof(struct game));
 
-    //struct game* pGameInfo = malloc(sizeof(struct game));
-    struct game* pGameInfo = malloc(sizeof(struct game));//initialiseGame();//= malloc(sizeof(struct game));
+    char* name1 = "John";
+    char* name2 = "Emma";
 
-    char *name1 = "John";
-    char *name2 = "Emma";
-
-    initialiseGame( pGameInfo, name1, name2);
+    initialiseGame(pGameInfo, name1, name2);
     printf("size: %d\n", sizeof(pGameInfo));
 
     for(int i=0;i<2;i++){
-        printf("Name%d: ",i+1);
-        for(int j=0;j<5;j++){
-            printf("%c--",pGameInfo->playerNames[i][j]);
-        }
-        printf("\n");
+        printf("Name%d: %s\n",i+1, pGameInfo->playerNames[i]);
     }
-    for(int i=0;i<3;i++){
-        for(int j=0;j<3;j++){
-            printf("%c",pGameInfo->board[i][j]);
-        }
-        printf("\n");
-    }
+
+    printf("status: %d  Finished: %d",pGameInfo->status,pGameInfo->finished);
+
+
+
+    drawBanner();
+    displayBoard(pGameInfo->board);
+
+
     free(pGameInfo);
 }
 
 void initialiseGame(struct game* pGameInfo, char* name1, char* name2){
     pGameInfo->finished = False;
-    pGameInfo->status = (int)malloc(sizeof(int));
-    *pGameInfo->playerNames[0] = (char)malloc(sizeof(name1));
-    *pGameInfo->playerNames[1] = (char)malloc(sizeof(name2));
-    *pGameInfo->playerNames[0] = *name1;
-    *pGameInfo->playerNames[1] = *name2;
+    pGameInfo->status = P1TURN;
+    strcpy(pGameInfo->playerNames[0],name1);
+    strcpy(pGameInfo->playerNames[1],name2);
     for(int i=0;i<3;i++){
         for(int j=0;j<3;j++){
             pGameInfo->board[i][j] = SPACE;
         }
     }
 
+}
+
+void drawBanner(){
+    for(int i=0;i<15;i++){
+        printf("\n");
+    }
+    printf("------------\nGAME STATUS\n------------\n");
+}
+
+void displayBoard(char board[3][3]){
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            printf("%c",board[i][j]);
+            if(j<2){
+                printf("|");
+            }
+        }
+        printf("\n");
+        if(i<2){
+            printf("-----\n");
+        }
+    }
 }
