@@ -10,8 +10,8 @@ enum status {P1TURN, P2TURN, P1WON, P2WON, DRAW};
 typedef enum Bool boolean;
 
 //extern const char SPACE = '-';
-//extern const char X = 'X';
-//extern const char Y = 'Y';
+//extern const char X_SYMBOL = 'X';
+//extern const char O_SYMBOL = 'O';
 
 struct game {
     char board[3][3];
@@ -24,4 +24,7 @@ void playGame();
 void initialiseGame(struct game* pGameInfo, char* name1, char* name2);
 void drawBanner();
 void displayBoard(char board[3][3]);
+void printStatus(struct game* pGameInfo);
+void displayBoardPositions();
+void getRowCol(int posNum, int* row, int* col);
 #endif
