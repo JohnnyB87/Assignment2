@@ -20,6 +20,7 @@ struct game {
     char playerNames[2][MAX_NAME_LEN];
     int status;
     boolean finished;
+    int noOfGoes;
 };
 
 void playGame();
@@ -32,4 +33,6 @@ void getRowCol(int posNum, int* row, int* col);
 int getUserInput();
 boolean checkValidity(struct game *pGameInfo, int choice, int *row, int* col);
 void processMove(struct game *pGameInfo, int *row, int* col);
+int whoGoesFirst();
+boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c);
 #endif

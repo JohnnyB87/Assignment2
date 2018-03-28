@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
+#include <time.h>
 //#define CONST_VARS
 #include "game.h"
 
@@ -16,58 +17,43 @@ const char O_SYMBOL = 'O';
 
 void playGame() {
     printf("Xs and Os!\n");
-    struct game* pGameInfo = malloc(sizeof(struct game));
-
+    struct game* pGameInfo = (struct game*)malloc(sizeof(struct game));
+    int row;
+    int col;
     char* name1 = "John";
     char* name2 = "Emma";
 
-    initialiseGame(pGameInfo, name1, name2);
-    printf("size: %d\n", sizeof(pGameInfo));
 
-    for(int i=0;i<2;i++){
-        printf("Name%d: %s\n",i+1, pGameInfo->playerNames[i]);
+    initialiseGame(pGameInfo, name1, name2);
+    while(!pGameInfo->finished) {
+        printStatus(pGameInfo);
+        processMove(pGameInfo, &row, &col);
+
     }
 
-    printf("status: %d  Finished: %d",pGameInfo->status,pGameInfo->finished);
+    printStatus(pGameInfo);
 
-
-
-//    drawBanner();
-//    displayBoard(pGameInfo->board);
-
-    initialiseGame(pGameInfo, "John", "Annie");
-    pGameInfo->board[0][0] = X_SYMBOL; // top left X
-    pGameInfo->board[2][2] = O_SYMBOL; // bottom right o
-
-//    displayBoard(pGameInfo->board);
-//
-//    printStatus(pGameInfo);
-//    displayBoardPositions();
-
-    printf("\n\n");
-    int row;
-    int col;
-//    for(int i=0;i<9;i++) {
-////        getRowCol(i, &row, &col);
-//        boolean testBool = checkValidity(pGameInfo, i, &row, &col);
-//        printf("Position num: %d  row: %d  col: %d  Valid: %s\n",i,row,col,testBool ? "True" : "False");
-//    }
-//
-//    int test = getUserInput();
-//    printf("%d",test);
-
-    processMove(pGameInfo,&row,&col);
-    displayBoard(pGameInfo->board);
-    processMove(pGameInfo,&row,&col);
-    displayBoard(pGameInfo->board);
     free(pGameInfo);
 }
 
 void initialiseGame(struct game* pGameInfo, char* name1, char* name2){
+    if(pGameInfo == NULL){
+        printf("ERROR: Null pointer Exception\n");
+        return;
+    }
     pGameInfo->finished = False;
     pGameInfo->status = P1TURN;
-    strcpy(pGameInfo->playerNames[0],name1);
-    strcpy(pGameInfo->playerNames[1],name2);
+    pGameInfo->noOfGoes = 0;
+    int first = whoGoesFirst();
+    printf("First: %d\n\n", first);
+    if(first == 0) {
+        strcpy(pGameInfo->playerNames[0], name1);
+        strcpy(pGameInfo->playerNames[1], name2);
+    }else{
+        strcpy(pGameInfo->playerNames[0], name2);
+        strcpy(pGameInfo->playerNames[1], name1);
+    }
+    printf("Player1: %s  player2: %s \n\n\n",pGameInfo->playerNames[0], pGameInfo->playerNames[1]);
     for(int i=0;i<3;i++){
         for(int j=0;j<3;j++){
             pGameInfo->board[i][j] = SPACE;
@@ -100,7 +86,8 @@ void displayBoard(char board[3][3]){
 }
 
 void printStatus(struct game* pGameInfo){
-    printf("\n\n");
+    displayBoard(pGameInfo->board);
+    printf("\n");
     if(pGameInfo->finished == False){
         if(pGameInfo->status == P1TURN) {
             printf("%s's Turn", pGameInfo->playerNames[0]);
@@ -134,6 +121,7 @@ void displayBoardPositions(){
         }
         count++;
     }
+    printf("\n");
 }
 
 void getRowCol(int posNum, int* row, int* col){
@@ -167,16 +155,97 @@ void processMove(struct game *pGameInfo, int *row, int* col){
     boolean valid = False;
     int choice;
     while(valid == False) {
+        displayBoardPositions();
         choice = getUserInput();
         valid = checkValidity(pGameInfo, choice, row, col);
         printf("\nChosen Number: %d Already Selected: %s\n",
                choice, valid ? "False" : "True");
     }
+    pGameInfo->noOfGoes++;
     if(pGameInfo->status == P1TURN){
         pGameInfo->board[*row][*col] = X_SYMBOL;
+        if(pGameInfo->noOfGoes > 4 && checkForWinner(pGameInfo, row, col,X_SYMBOL)){
+            pGameInfo->status = P1WON;
+            pGameInfo->finished = True;
+            return;
+        }
         pGameInfo->status = P2TURN;
     }else{
         pGameInfo->board[*row][*col] = O_SYMBOL;
+        if(pGameInfo->noOfGoes > 4 && checkForWinner(pGameInfo, row, col,O_SYMBOL)){
+            pGameInfo->status = P2WON;
+            pGameInfo->finished = True;
+            return;
+        }
         pGameInfo->status = P1TURN;
     }
+    if(pGameInfo->noOfGoes == 9){
+        pGameInfo->finished =True;
+        pGameInfo->status = DRAW;
+    }
+
+}
+
+int whoGoesFirst(){
+    int r;
+    srand(time(0));
+    r = rand() % 2;
+    return r;
+
+}
+
+boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
+    // check rows
+    printf("ROWS\n");
+    for(int i=0;i<3;i++){
+        printf("board[%d][%d]: %c\n",*row,i, pGameInfo->board[*row][i]);
+        if(pGameInfo->board[*row][i] != c){
+            break;
+        }
+        else if(i == 2){
+            return True;
+        }
+    }
+
+    // check columns
+    printf("COLUMNS\n");
+    for(int i=0;i<3;i++){
+
+        printf("board[%d][%d]: %c\n",i,*col, pGameInfo->board[i][*col]);
+        if(pGameInfo->board[i][*col] != c){
+            break;
+        }
+        else if(i == 2){
+            return True;
+        }
+    }
+
+    // check diagonal
+    printf("DIAGONAL\n");
+    if(*col == *row) {
+        for (int i = 0; i < 3; i++) {
+            printf("board[%d][%d]: %c\n",i,i, pGameInfo->board[i][i]);
+            if (pGameInfo->board[i][i] != c) {
+                break;
+            }
+            else if (i == 2) {
+                return True;
+            }
+        }
+    }
+
+    // check reverse diagonal
+    printf("REVERSE DIAGONAL\n");
+    if((*col + *row) == 2) {
+        for (int i = 0; i < 3; i++) {
+            printf("board[%d][%d]: %c\n",i,2-i, pGameInfo->board[i][i-2]);
+            if (pGameInfo->board[i][2-i] != c) {
+                break;
+            }
+            else if (i == 2) {
+                return True;
+            }
+        }
+    }
+    return False;
 }
