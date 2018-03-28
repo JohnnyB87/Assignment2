@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
+//#define CONST_VARS
 #include "game.h"
+
 
 const char SPACE = '-';
 const char X_SYMBOL = 'X';
@@ -31,24 +33,33 @@ void playGame() {
 
 
 //    drawBanner();
-    displayBoard(pGameInfo->board);
+//    displayBoard(pGameInfo->board);
 
     initialiseGame(pGameInfo, "John", "Annie");
     pGameInfo->board[0][0] = X_SYMBOL; // top left X
     pGameInfo->board[2][2] = O_SYMBOL; // bottom right o
 
-    displayBoard(pGameInfo->board);
-
-    printStatus(pGameInfo);
-    displayBoardPositions();
+//    displayBoard(pGameInfo->board);
+//
+//    printStatus(pGameInfo);
+//    displayBoardPositions();
 
     printf("\n\n");
     int row;
     int col;
-    for(int i=0;i<9;i++) {
-        getRowCol(i, &row, &col);
-        printf("Position num: %d  row: %d  col: %d\n",i,row,col);
-    }
+//    for(int i=0;i<9;i++) {
+////        getRowCol(i, &row, &col);
+//        boolean testBool = checkValidity(pGameInfo, i, &row, &col);
+//        printf("Position num: %d  row: %d  col: %d  Valid: %s\n",i,row,col,testBool ? "True" : "False");
+//    }
+//
+//    int test = getUserInput();
+//    printf("%d",test);
+
+    processMove(pGameInfo,&row,&col);
+    displayBoard(pGameInfo->board);
+    processMove(pGameInfo,&row,&col);
+    displayBoard(pGameInfo->board);
     free(pGameInfo);
 }
 
@@ -128,4 +139,44 @@ void displayBoardPositions(){
 void getRowCol(int posNum, int* row, int* col){
     *row = posNum/3;
     *col = posNum%3;
+}
+
+int getUserInput(){
+    int n;
+    while(True) {
+        printf("Enter a number (0 - 8):");
+        scanf("%d", &n);
+        if (n >=0 && n <= 8) {
+            return n;
+        } else {
+            printf("ERROR: Invalid Number\n");
+            continue;
+        }
+    }
+}
+
+boolean checkValidity(struct game *pGameInfo, int choice, int *row, int* col){
+    getRowCol(choice,row,col);
+    if(pGameInfo->board[*row][*col] == SPACE){
+       return True;
+    }
+    return False;
+}
+
+void processMove(struct game *pGameInfo, int *row, int* col){
+    boolean valid = False;
+    int choice;
+    while(valid == False) {
+        choice = getUserInput();
+        valid = checkValidity(pGameInfo, choice, row, col);
+        printf("\nChosen Number: %d Already Selected: %s\n",
+               choice, valid ? "False" : "True");
+    }
+    if(pGameInfo->status == P1TURN){
+        pGameInfo->board[*row][*col] = X_SYMBOL;
+        pGameInfo->status = P2TURN;
+    }else{
+        pGameInfo->board[*row][*col] = O_SYMBOL;
+        pGameInfo->status = P1TURN;
+    }
 }
