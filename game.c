@@ -7,7 +7,6 @@
 #include <string.h>
 #include <malloc.h>
 #include <time.h>
-//#define CONST_VARS
 #include "game.h"
 
 
@@ -20,8 +19,10 @@ void playGame() {
     struct game* pGameInfo = (struct game*)malloc(sizeof(struct game));
     int row;
     int col;
-    char* name1 = "John";
-    char* name2 = "Emma";
+    char* name1 = _argv[1];
+    char* name2 = _argv[2];
+
+    printf("name1: %s   name2: %s \n\n",name1,name2);
 
 
     initialiseGame(pGameInfo, name1, name2);
