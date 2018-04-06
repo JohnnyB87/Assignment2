@@ -10,7 +10,7 @@
 #include "game.h"
 
 
-const char SPACE = '-';
+const char SPACE = ' ';
 const char X_SYMBOL = 'X';
 const char O_SYMBOL = 'O';
 
@@ -139,6 +139,10 @@ int getUserInput(){
             return n;
         } else {
             printf("ERROR: Invalid Number\n");
+            char d = (char) n;
+            while(d != '\n'){
+                d = (char) getchar();
+            }
             continue;
         }
     }
