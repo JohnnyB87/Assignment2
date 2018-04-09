@@ -194,7 +194,12 @@ void processMove(struct game *pGameInfo, int *row, int* col){
 int whoGoesFirst(){
     int r;
     srand(time(0));
-    r = rand() % 2;
+//    int i=0;
+//    while(i<10) {
+        r = rand() % 2;
+//        printf("r = %d\n",r);
+//        i++;
+//    }
     return r;
 
 }
