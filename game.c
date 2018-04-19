@@ -20,10 +20,6 @@ void playGame() {
     struct game* pGameInfo = (struct game*)malloc(sizeof(struct game));
     int row;
     int col;
-//    char name1[MAX_NAME_LEN];
-//    strcpy(name1,pGameInfo->playerNames[1]);
-//    char name2[MAX_NAME_LEN];
-//    strcpy(name2,pGameInfo->playerNames[2]);
     char* pName1 = NULL;
     char* pName2 = NULL;
     if(__argc > 2) {
