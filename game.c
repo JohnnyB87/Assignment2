@@ -7,6 +7,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <time.h>
+#include <ctype.h>
 #include "game.h"
 
 
@@ -19,13 +20,23 @@ void playGame() {
     struct game* pGameInfo = (struct game*)malloc(sizeof(struct game));
     int row;
     int col;
-    char* name1 = _argv[1];
-    char* name2 = _argv[2];
+//    char name1[MAX_NAME_LEN];
+//    strcpy(name1,pGameInfo->playerNames[1]);
+//    char name2[MAX_NAME_LEN];
+//    strcpy(name2,pGameInfo->playerNames[2]);
+    char* pName1 = NULL;
+    char* pName2 = NULL;
+    if(__argc > 2) {
+        pName1 = __argv[1];
+        pName2 = __argv[2];
+    }
 
-    printf("name1: %s   name2: %s \n\n",name1,name2);
+    getPlayerNames(pName1, pName2);
+
+    printf("name1: %s   name2: %s \n\n", pName1, pName2);
 
 
-    initialiseGame(pGameInfo, name1, name2);
+    initialiseGame(pGameInfo, pName1, pName2);
     while(!pGameInfo->finished) {
         printStatus(pGameInfo);
         processMove(pGameInfo, &row, &col);
@@ -258,4 +269,77 @@ boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
         }
     }
     return False;
+}
+
+void getName(char* name){
+    printf("Enter player name: ");
+    scanf("%s", name);
+    printf("\n");
+}
+
+void getPlayerNames(char* name1, char* name2){
+    char yesOrNo = ' ';
+    askUserHowNamesAreEntered(&yesOrNo);
+    boolean isDup = True;
+    while(isDup) {
+        if (yesOrNo == 'N' || yesOrNo == 'n') {
+            getName(name1);
+            getName(name2);
+        }
+        convertName(name1);
+        convertName(name2);
+        isDup = isDuplicate(*name1, *name2);
+        yesOrNo = 'n';
+    }
+
+}
+
+void askUserHowNamesAreEntered(char* yesOrNo){
+    while(*yesOrNo != 'y' && *yesOrNo != 'n') {
+        printf("Are you using command arguments for the names? y or n\n");
+        *yesOrNo = myGetChar();
+        if(*yesOrNo == 'Y')
+            *yesOrNo = 'y';
+        else if(*yesOrNo == 'N')
+            *yesOrNo = 'n';
+    }
+}
+
+boolean isDuplicate(char name1, char name2) {
+    if(name1 == name2) {
+        printf("Duplicates entered.\n");
+        return True;
+    }
+    return False;
+}
+
+void convertName(char*pName){
+    if(pName[0]>96  && pName[0]<123){
+        pName[0] = (char)toupper(pName[0]);
+    }
+    for(int i=1;i<strlen( pName);i++){
+        if(pName[i]>64  && pName[i]<91){
+            pName[i] = (char) tolower(pName[i]);
+        }
+    }
+    printf("NAME: %s\n",pName);
+}
+
+char myGetChar() {
+    //1. We create the output variable with the value the user has input by keyboard
+    char res = getchar();
+
+    //2. We discard any extra character the user has input by keyboard
+    boolean finish = False;
+    char dummy_char = res;
+
+    while (finish == False) {
+        if (dummy_char == '\n')
+            finish = True;
+        else
+            dummy_char = getchar();
+    }
+
+    //3. We return the output variable
+    return res;
 }
