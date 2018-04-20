@@ -15,22 +15,20 @@ const char SPACE = ' ';
 const char X_SYMBOL = 'X';
 const char O_SYMBOL = 'O';
 
-void playGame() {
+void playGame(char* pName1, char* pName2) {
     printf("Xs and Os!\n");
     struct game* pGameInfo = (struct game*)malloc(sizeof(struct game));
     int row;
     int col;
-    char* pName1 = NULL;
-    char* pName2 = NULL;
-    if(__argc > 2) {
-        pName1 = __argv[1];
-        pName2 = __argv[2];
+
+    if(pName1 == NULL || pName2 == NULL) {
+        pName1 = malloc(sizeof(char*));
+        pName2 = malloc(sizeof(char*));
     }
 
     getPlayerNames(pName1, pName2);
 
-    printf("name1: %s   name2: %s \n\n", pName1, pName2);
-
+//    printf("name1: %s   name2: %s \n\n", pName1, pName2);
 
     initialiseGame(pGameInfo, pName1, pName2);
     while(!pGameInfo->finished) {
@@ -49,19 +47,15 @@ void initialiseGame(struct game* pGameInfo, char* name1, char* name2){
         printf("ERROR: Null pointer Exception\n");
         return;
     }
-    pGameInfo->finished = False;
-    pGameInfo->status = P1TURN;
-    pGameInfo->noOfGoes = 0;
     int first = whoGoesFirst();
-    printf("First: %d\n\n", first);
-    if(first == 0) {
-        strcpy(pGameInfo->playerNames[0], name1);
-        strcpy(pGameInfo->playerNames[1], name2);
-    }else{
-        strcpy(pGameInfo->playerNames[0], name2);
-        strcpy(pGameInfo->playerNames[1], name1);
-    }
-    printf("Player1: %s  player2: %s \n\n\n",pGameInfo->playerNames[0], pGameInfo->playerNames[1]);
+    pGameInfo->finished = False;
+    pGameInfo->status = first;
+    pGameInfo->noOfGoes = 0;
+//    printf("First: %d\n\n", first);
+    strcpy(pGameInfo->playerNames[0], name1);
+    strcpy(pGameInfo->playerNames[1], name2);
+
+//    printf("Player1: %s  player2: %s \n\n\n",pGameInfo->playerNames[0], pGameInfo->playerNames[1]);
     for(int i=0;i<3;i++){
         for(int j=0;j<3;j++){
             pGameInfo->board[i][j] = SPACE;
@@ -158,7 +152,7 @@ int getUserInput(){
 boolean checkValidity(struct game *pGameInfo, int choice, int *row, int* col){
     getRowCol(choice,row,col);
     if(pGameInfo->board[*row][*col] == SPACE){
-       return True;
+        return True;
     }
     return False;
 }
@@ -203,7 +197,7 @@ int whoGoesFirst(){
     srand(time(0));
 //    int i=0;
 //    while(i<10) {
-        r = rand() % 2;
+    r = rand() % 2;
 //        printf("r = %d\n",r);
 //        i++;
 //    }
@@ -267,9 +261,17 @@ boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
     return False;
 }
 
-void getName(char* name){
+void getName(char* pName){
     printf("Enter player name: ");
-    scanf("%s", name);
+    scanf("%s", pName);
+//    char*name = "";
+//    for(int i=0;i<strlen( pName);i++){
+//        if((pName[i]>64  && pName[i]<91)
+//           || (pName[i]>96  && pName[i]<123)){
+//            strcat(name, (char *) pName[i]);
+//        }
+//    }
+//    strcpy(pName,name);
     printf("\n");
 }
 
@@ -282,9 +284,11 @@ void getPlayerNames(char* name1, char* name2){
             getName(name1);
             getName(name2);
         }
-        convertName(name1);
-        convertName(name2);
-        isDup = isDuplicate(*name1, *name2);
+        if(name1 != NULL) {
+            convertName(name1);
+            convertName(name2);
+            isDup = isDuplicate(*name1, *name2);
+        }
         yesOrNo = 'n';
     }
 
@@ -303,7 +307,7 @@ void askUserHowNamesAreEntered(char* yesOrNo){
 
 boolean isDuplicate(char name1, char name2) {
     if(name1 == name2) {
-        printf("Duplicates entered.\n");
+        printf("Duplicate names entered.\n");
         return True;
     }
     return False;
@@ -318,7 +322,7 @@ void convertName(char*pName){
             pName[i] = (char) tolower(pName[i]);
         }
     }
-    printf("NAME: %s\n",pName);
+//    printf("NAME: %s\n",pName);
 }
 
 char myGetChar() {
