@@ -23,7 +23,7 @@ struct game {
     int noOfGoes;
 };
 
-void playGame(char* name1, char* name2);
+void playGame(char name1[], char name2[]);
 void initialiseGame(struct game* pGameInfo, char* name1, char* name2);
 void drawBanner();
 void displayBoard(char board[3][3]);
@@ -38,7 +38,7 @@ boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c);
 char myGetChar();
 void getPlayerNames(char* name1, char* name2);
 void getName(char* name);
-boolean isDuplicate(char name1, char name2);
-void askUserHowNamesAreEntered(char* yesOrNo);
+boolean isDuplicate(char* name1, char* name2);
+//void askUserHowNamesAreEntered(char* yesOrNo);
 void convertName(char*pName);
 #endif

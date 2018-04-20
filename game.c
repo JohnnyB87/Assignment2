@@ -15,18 +15,18 @@ const char SPACE = ' ';
 const char X_SYMBOL = 'X';
 const char O_SYMBOL = 'O';
 
-void playGame(char* pName1, char* pName2) {
+void playGame(char pName1[] , char pName2[]) {
     printf("Xs and Os!\n");
     struct game* pGameInfo = (struct game*)malloc(sizeof(struct game));
     int row;
     int col;
 
-    if(pName1 == NULL || pName2 == NULL) {
-        pName1 = malloc(sizeof(char*));
-        pName2 = malloc(sizeof(char*));
+    if(pName1[0] == NULL || pName2[0] == NULL || isDuplicate( pName1, pName2))  {
+        printf("IN IF STATEMENT ---- name1: %s   name2: %s\n",pName1,pName2);
+        getPlayerNames(pName1, pName2);
     }
 
-    getPlayerNames(pName1, pName2);
+
 
 //    printf("name1: %s   name2: %s \n\n", pName1, pName2);
 
@@ -207,9 +207,9 @@ int whoGoesFirst(){
 
 boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
     // check rows
-    printf("ROWS\n");
+//    printf("ROWS\n");
     for(int i=0;i<3;i++){
-        printf("board[%d][%d]: %c\n",*row,i, pGameInfo->board[*row][i]);
+//        printf("board[%d][%d]: %c\n",*row,i, pGameInfo->board[*row][i]);
         if(pGameInfo->board[*row][i] != c){
             break;
         }
@@ -219,10 +219,10 @@ boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
     }
 
     // check columns
-    printf("COLUMNS\n");
+//    printf("COLUMNS\n");
     for(int i=0;i<3;i++){
 
-        printf("board[%d][%d]: %c\n",i,*col, pGameInfo->board[i][*col]);
+//        printf("board[%d][%d]: %c\n",i,*col, pGameInfo->board[i][*col]);
         if(pGameInfo->board[i][*col] != c){
             break;
         }
@@ -232,10 +232,10 @@ boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
     }
 
     // check diagonal
-    printf("DIAGONAL\n");
+//    printf("DIAGONAL\n");
     if(*col == *row) {
         for (int i = 0; i < 3; i++) {
-            printf("board[%d][%d]: %c\n",i,i, pGameInfo->board[i][i]);
+//            printf("board[%d][%d]: %c\n",i,i, pGameInfo->board[i][i]);
             if (pGameInfo->board[i][i] != c) {
                 break;
             }
@@ -246,10 +246,10 @@ boolean checkForWinner(struct game* pGameInfo, int *row, int* col, char c){
     }
 
     // check reverse diagonal
-    printf("REVERSE DIAGONAL\n");
+//    printf("REVERSE DIAGONAL\n");
     if((*col + *row) == 2) {
         for (int i = 0; i < 3; i++) {
-            printf("board[%d][%d]: %c\n",i,2-i, pGameInfo->board[i][i-2]);
+//            printf("board[%d][%d]: %c\n",i,2-i, pGameInfo->board[i][i-2]);
             if (pGameInfo->board[i][2-i] != c) {
                 break;
             }
@@ -276,37 +276,32 @@ void getName(char* pName){
 }
 
 void getPlayerNames(char* name1, char* name2){
-    char yesOrNo = ' ';
-    askUserHowNamesAreEntered(&yesOrNo);
     boolean isDup = True;
     while(isDup) {
-        if (yesOrNo == 'N' || yesOrNo == 'n') {
-            getName(name1);
-            getName(name2);
-        }
+        getName(name1);
+        getName(name2);
         if(name1 != NULL) {
             convertName(name1);
             convertName(name2);
-            isDup = isDuplicate(*name1, *name2);
+            isDup = isDuplicate(name1, name2);
         }
-        yesOrNo = 'n';
     }
 
 }
 
-void askUserHowNamesAreEntered(char* yesOrNo){
-    while(*yesOrNo != 'y' && *yesOrNo != 'n') {
-        printf("Are you using command arguments for the names? y or n\n");
-        *yesOrNo = myGetChar();
-        if(*yesOrNo == 'Y')
-            *yesOrNo = 'y';
-        else if(*yesOrNo == 'N')
-            *yesOrNo = 'n';
-    }
-}
+//void askUserHowNamesAreEntered(char* yesOrNo){
+//    while(*yesOrNo != 'y' && *yesOrNo != 'n') {
+//        printf("Are you using command arguments for the names? y or n\n");
+//        *yesOrNo = myGetChar();
+//        if(*yesOrNo == 'Y')
+//            *yesOrNo = 'y';
+//        else if(*yesOrNo == 'N')
+//            *yesOrNo = 'n';
+//    }
+//}
 
-boolean isDuplicate(char name1, char name2) {
-    if(name1 == name2) {
+boolean isDuplicate(char* name1, char* name2) {
+    if(strcmp(name1,name2) == 0) {
         printf("Duplicate names entered.\n");
         return True;
     }
